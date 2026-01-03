@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import "../styles/global.css";
+
+const response = await fetch('http://127.0.0.1:8000/')
+const data = await response.json();
+const message = data.message;
+---
+
+<Layout>
+	<h1 class="text-3xl font-bold underline">
+		{message}
+	</h1>
+</Layout>
