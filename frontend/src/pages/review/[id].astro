@@ -1,0 +1,140 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { type Review, RatingEnum } from '../../types';
+import { marked } from 'marked';
+import '../../styles/global.css';
+
+export async function getStaticPaths() {
+  const API_URL = import.meta.env.PUBLIC_API_URL;
+  
+  try {
+  const response = await fetch(`${API_URL}/reviews/`);
+  const reviews: Review[] = await response.json();
+
+  return reviews.map((review) => ({
+    params: { id: review.id.toString() },
+    props: { review },
+  }));
+  } catch (error) {
+  console.error("Erro ao gerar paths:", error);
+  return [];
+  }
+}
+
+interface Props {
+  review: Review;
+}
+const { review } = Astro.props;
+
+const contentHtml = marked.parse(review.review_markdown || "Sem conteúdo...");
+
+const date = new Date(review.created_at).toLocaleDateString('pt-BR', {
+  day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+});
+
+const getRatingColor = (rating: number) => {
+  switch (rating) {
+  case RatingEnum.ABISMO: return "text-red-600";
+  case RatingEnum.NAO_E_PRA_MIM: return "text-orange-600";
+  case RatingEnum.ESQUECIVEL: return "text-gray-500";
+  case RatingEnum.MANEIRO: return "text-green-600";
+  case RatingEnum.PEAK_FICTION: return "text-purple-600";
+  default: return "text-black";
+  }
+};
+const ratingColor = getRatingColor(review.rating);
+---
+
+<Layout>
+  <main class="max-w-4xl mx-auto p-4 font-mono">
+  
+  <a href="/" class="inline-block mb-3 px-4 py-1 bg-[#67a7ac] border-t-2 border-l-2 border-b-2 border-r-2 border-[#306f74] hover:bg-[#306f74]/80 hover:text-white transition-colors">
+    &lt; VOLTAR PARA A LISTA
+  </a>
+
+  <article class="bg-white">
+    
+    <header class="border-b-2 border-black p-6 bg-gray-100">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+      <span class="text-xs font-bold bg-black text-white px-2 py-0.5 uppercase tracking-widest">
+        {review.content_type}
+      </span>
+      <h1 class="text-3xl md:text-5xl font-black mt-2 leading-none uppercase">
+        {review.title}
+      </h1>
+      </div>
+
+      <div class={`border-4 border-double border-black p-2 text-center transform rotate-2 ${ratingColor}`}>
+        <span class="text-sm block text-black font-bold">VEREDITO:</span>
+        <span class="text-2xl font-black uppercase">
+            {RatingEnum[review.rating].replace(/_/g, ' ')}
+        </span>
+      </div>
+    </div>
+
+    <div class="mt-4 md:mt-6 text-xs md:text-sm text-gray-600 font-mono border-t border-gray-400 pt-2 flex flex-wrap gap-4">
+      <span>> ID: {review.id}</span>
+      <span>> DATA: {date}</span>
+      {review.time_spent && <span>> TEMPO: {review.time_spent}</span>}
+      
+      {review.external_link && (
+      <a href={review.external_link} target="_blank" class="text-blue-600 hover:underline hover:bg-blue-100">
+        > LINK EXTERNO
+      </a>
+      )}
+    </div>
+    </header>
+
+    <div class="w-full h-64 md:h-96 overflow-hidden border-b-2 border-black relative group">
+        <img 
+        src={review.cover_image_url} 
+        class="w-full h-full object-cover object-center grayscale-20 group-hover:grayscale-0 transition-all duration-500"
+        />
+
+        {review.reaction_gif_url && (
+        <div class="absolute bottom-4 right-4 w-36 md:w-56 aspect-4/3 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] z-20">
+            <div class="relative w-full h-full bg-black">
+            
+            <img 
+                src={review.reaction_gif_url} 
+                class="absolute inset-0 w-full h-full object-cover pt-6" 
+                alt="Reaction GIF"
+            />
+
+            <img 
+                src="/src/assets/live_reaction.png" 
+                class="absolute inset-0 w-full h-full object-fill z-10 pointer-events-none" 
+                alt="Live Reaction Overlay" 
+            />
+            </div>
+        </div>
+        )}
+    </div>
+
+    <div class="p-6 md:p-10 bg-[#fffef0] text-black leading-relaxed">
+    <div class="markdown-content prose prose-slate max-w-none prose-headings:font-bold prose-a:text-blue-600 prose-img:border-2 prose-img:border-black">
+      <Fragment set:html={contentHtml} />
+    </div>
+    </div>
+
+    <footer class="p-4 bg-gray-200 border-t-2 border-black text-xs flex gap-2">
+    <span class="font-bold">TAGS:</span>
+    {review.tags_list.split(',').map(tag => (
+      <span class="bg-white border border-black px-1 uppercase">
+      {tag.trim()}
+      </span>
+    ))}
+    </footer>
+
+  </article>
+  </main>
+</Layout>
+
+<style is:global>
+  .markdown-content h1 { font-size: 2em; margin-bottom: 0.5em; border-bottom: 2px solid black; }
+  .markdown-content h2 { font-size: 1.5em; margin-top: 1em; margin-bottom: 0.5em; font-weight: bold; }
+  .markdown-content p { margin-bottom: 1em; }
+  .markdown-content ul { list-style: square; margin-left: 1.5em; margin-bottom: 1em; }
+  .markdown-content blockquote { border-left: 4px solid black; padding-left: 1em; font-style: italic; background: #e5e7eb; padding: 0.5em; }
+</style>

@@ -1,15 +1,82 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/ico" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Letracaixad</title>
 	</head>
+	<script is:inline>
+		// Atribui ID
+		const myId = Math.random().toString(36).substring(2, 11);
+
+		// Atribui cor
+		const cursorColors = ['#FF00FF', '#00FFFF', '#00FF00', '#FFFF00', '#FF0000'];
+		const myColor = cursorColors[Math.floor(Math.random() * cursorColors.length)];
+
+		// Pega página atual
+		const currentPage = encodeURIComponent(window.location.pathname);
+
+		// Conecta no WebSocket
+		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		const wsUrl = `${protocol}//localhost:8000/ws/${myId}?page=${currentPage}`; 
+  		const ws = new WebSocket(wsUrl);
+
+		const cursors = {};
+
+		ws.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+
+			// Remove cursor se desconectar
+			if (data.type === 'disconnect') {
+			if (cursors[data.id]) {
+				cursors[data.id].remove();
+				delete cursors[data.id];
+			}
+			return;
+			}
+
+			// Se o cursor não existe ainda, cria ele
+			if (!cursors[data.id]) {
+			const cursor = document.createElement('div');
+			cursor.className = 'other-cursor';
+
+			cursor.innerHTML = `
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M5.65376 12.3673H5.46026L5.31717 12.4976L0.500002 16.8829L0.500002 1.19135L11.7841 12.3673H5.65376Z" fill="${data.color}" stroke="black" stroke-width="1"/>
+				</svg>
+			`;
+			cursor.style.position = 'absolute';
+			cursor.style.pointerEvents = 'none';
+			cursor.style.transition = 'transform 0.1s linear';
+			document.body.appendChild(cursor);
+			cursors[data.id] = cursor;
+			}
+
+			const el = cursors[data.id];
+			el.style.left = data.x + 'px';
+			el.style.top = data.y + 'px';
+		};
+
+		let lastSent = 0;
+		document.addEventListener('mousemove', (e) => {
+			const now = Date.now();
+			if (now - lastSent > 50) { // controla taxa de envio
+			if (ws.readyState === WebSocket.OPEN) {
+				ws.send(JSON.stringify({
+				x: e.pageX,
+				y: e.pageY,
+				color: myColor
+				}));
+				lastSent = now;
+			}
+			}
+		});
+	</script>
 	<body>
-		<slot />
-	</body>
+    	<slot />
+    </body>
 </html>
 
 <style>

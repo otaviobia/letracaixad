@@ -1,14 +1,46 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import "../styles/global.css";
+import ReviewCard from '../components/ReviewCard.astro';
+import type { Review } from '../types';
+import '../styles/global.css';
 
-const response = await fetch('http://127.0.0.1:8000/')
-const data = await response.json();
-const message = data.message;
+const API_URL = import.meta.env.PUBLIC_API_URL;
+
+let reviews: Review[] = [];
+try {
+  const response = await fetch(`${API_URL}/reviews/`);
+  if (response.ok) {
+    reviews = await response.json();
+  } else {
+    console.error("Erro ao buscar reviews:", response.status);
+  }
+} catch (error) {
+  console.error("API Offline ou inacessível:", error);
+}
 ---
 
 <Layout>
-	<h1 class="text-3xl font-bold underline">
-		{message}
-	</h1>
+	<main class="max-w-6xl mx-auto p-8 text-white">
+    
+    <header class="mb-6 border-b-4 border-white pb-4 flex items-center justify-center">
+		<img src="/src/assets/logo.png" alt="Logo Letracaixad" class="w-8 md:w-14 mr-4" />
+		<h1 class="text-4xl md:text-6xl font-black tracking-tighter font-mono text-center">
+			Letracaixad
+		</h1>
+    </header>
+
+    {reviews.length === 0 ? (
+      <div class="p-8 border-2 border-dashed border-black text-center font-mono">
+        <p class="text-xl">NENHUM DADO ENCONTRADO NO SERVIDOR...</p>
+        <p class="text-sm mt-2 text-gray-500">Verifique se o backend Python está rodando.</p>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {reviews.map((review) => (
+          <ReviewCard review={review} />
+        ))}
+      </div>
+    )}
+
+	</main>
 </Layout>

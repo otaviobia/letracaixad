@@ -1,1 +1,12 @@
 @import "tailwindcss";
+@import "dither-plugin";
+
+body {
+    background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2)), url("/src/assets/outer-wilds-4k.png");
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    overflow-x: hidden; 
+}
