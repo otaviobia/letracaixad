@@ -12,7 +12,10 @@ services:
       - blog-network
 
   web:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        PUBLIC_API_URL: ${PUBLIC_API_URL}
     container_name: blog-frontend
     restart: always
     depends_on:

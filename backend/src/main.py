@@ -53,9 +53,9 @@ app.add_middleware(
     CORSMiddleware,
     # Lista de origens permitidas (quem pode chamar a API)
     allow_origins=[
-        "http://localhost:4321",    # Seu frontend local
-        "http://127.0.0.1:4321",    # Variação do local
-        # "https://seu-site-no-cloudflare.com" # Futuramente, adicione seu domínio aqui
+    "http://localhost:4321",
+    "http://[2804:14d:5888:2e5a::1000]",
+    "http://[2804:14d:5888:2e5a::1000]:80"
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, DELETE, PATCH, OPTIONS
