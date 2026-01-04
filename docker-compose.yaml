@@ -1,0 +1,35 @@
+services:
+  api:
+    build: ./backend
+    container_name: blog-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/database.db:/app/database.db
+      - ./backend/.env:/app/.env
+    networks:
+      - blog-network
+
+  web:
+    build: ./frontend
+    container_name: blog-frontend
+    restart: always
+    depends_on:
+      - api
+    networks:
+      - blog-network
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: blog-tunnel
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN}
+    networks:
+      - blog-network
+
+networks:
+  blog-network:
+    driver: bridge
