@@ -126,8 +126,10 @@ const ratingColor = getRatingColor(review.rating);
       </span>
     ))}
     </footer>
-
   </article>
+  <a href={`/admin/edit/${review.id}`} class="flex justify-center text-white/50 mt-2">
+    [EDITAR DADOS]
+  </a>
   </main>
 </Layout>
 

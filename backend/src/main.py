@@ -12,6 +12,7 @@ from sqlmodel import Session, select
 from src.database import create_db_and_tables, get_session
 from src.models import Review, ReviewCreate, ReviewUpdate
 from src.connection_manager import manager
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -43,9 +44,22 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="Blog Pessoal API",
+    title="Letracaixad API",
     version="1.0.0",
     lifespan=lifespan
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    # Lista de origens permitidas (quem pode chamar a API)
+    allow_origins=[
+        "http://localhost:4321",    # Seu frontend local
+        "http://127.0.0.1:4321",    # Variação do local
+        # "https://seu-site-no-cloudflare.com" # Futuramente, adicione seu domínio aqui
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite GET, POST, DELETE, PATCH, OPTIONS
+    allow_headers=["*"],  # Permite cabeçalhos customizados (Importante para o X-Admin-Token!)
 )
 
 SessionDep = Annotated[Session, Depends(get_session)]

@@ -1,0 +1,180 @@
+---
+import { RatingEnum } from '../types';
+
+interface Props {
+  initialData?: any;
+  isEdit?: boolean;
+}
+
+const { initialData = {}, isEdit = false } = Astro.props;
+
+const data = {
+  title: initialData.title || '',
+  content_type: initialData.content_type || 'filme',
+  cover_image_url: initialData.cover_image_url || '',
+  reaction_gif_url: initialData.reaction_gif_url || '',
+  review_markdown: initialData.review_markdown || '',
+  rating: initialData.rating || RatingEnum.MANEIRO,
+  tags_list: initialData.tags_list || '',
+  external_link: initialData.external_link || '',
+  time_spent: initialData.time_spent || '',
+  published: initialData.published ?? true,
+};
+---
+
+<form id="review-form" class="font-mono max-w-4xl mx-auto p-6 border-2 border-black bg-gray-100 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+  
+  <h2 class="text-2xl font-black mb-6 uppercase border-b-2 border-black pb-2">
+    {isEdit ? `EDITANDO: ${data.title}` : 'NOVA ENTRADA NO BANCO DE DADOS'}
+  </h2>
+
+  <div class="mb-8 bg-red-100 p-4 border-2 border-red-500 border-dashed">
+    <label class="block font-bold text-red-700 text-xs mb-1">🔑 ADMIN SECRET</label>
+    <input 
+      type="password" 
+      id="admin-token" 
+      class="w-full bg-white border-2 border-red-500 p-2 text-sm" 
+      placeholder="Cole sua senha mestra aqui..."
+      required
+    />
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <div class="col-span-2">
+      <label class="block font-bold text-xs mb-1">TÍTULO DA OBRA</label>
+      <input type="text" name="title" value={data.title} required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none transition-colors" />
+    </div>
+
+    <div>
+      <label class="block font-bold text-xs mb-1">TIPO (filme, jogo, etc)</label>
+      <input type="text" name="content_type" value={data.content_type} required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
+    </div>
+
+    <div>
+      <label class="block font-bold text-xs mb-1">VEREDITO (NOTA)</label>
+      <select name="rating" class="w-full border-2 border-black p-2 bg-white focus:bg-yellow-50 outline-none cursor-pointer">
+        <option value="1" selected={data.rating == 1}>1 - ABISMO 💀</option>
+        <option value="2" selected={data.rating == 2}>2 - NÃO É PRA MIM 😐</option>
+        <option value="3" selected={data.rating == 3}>3 - ESQUECÍVEL ☁️</option>
+        <option value="4" selected={data.rating == 4}>4 - MANEIRO 🔥</option>
+        <option value="5" selected={data.rating == 5}>5 - PEAK FICTION 👑</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="block font-bold text-xs mb-1">URL DA CAPA (Jpg/Png)</label>
+      <input type="url" name="cover_image_url" value={data.cover_image_url} required class="w-full border-2 border-black p-2 text-xs focus:bg-yellow-50 outline-none" />
+    </div>
+
+    <div>
+      <label class="block font-bold text-xs mb-1">URL REACTION GIF (Opcional)</label>
+      <input type="url" name="reaction_gif_url" value={data.reaction_gif_url} class="w-full border-2 border-black p-2 text-xs focus:bg-yellow-50 outline-none" />
+    </div>
+
+    <div>
+      <label class="block font-bold text-xs mb-1">TEMPO GASTO (Ex: 2h 30m)</label>
+      <input type="text" name="time_spent" value={data.time_spent} class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
+    </div>
+
+    <div>
+      <label class="block font-bold text-xs mb-1">LINK EXTERNO (Onde ver?)</label>
+      <input type="url" name="external_link" value={data.external_link} class="w-full border-2 border-black p-2 text-xs focus:bg-yellow-50 outline-none" />
+    </div>
+
+    <div class="col-span-2">
+      <label class="block font-bold text-xs mb-1">TAGS (Separadas por vírgula)</label>
+      <input type="text" name="tags_list" value={data.tags_list} placeholder="terror, a24, indie" required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
+    </div>
+
+    <div class="col-span-2">
+      <label class="block font-bold text-xs mb-1">REVIEW (MARKDOWN SUPORTADO)</label>
+      <textarea name="review_markdown" rows="12" class="w-full border-2 border-black p-4 font-mono text-sm leading-relaxed focus:bg-yellow-50 outline-none" required>{data.review_markdown}</textarea>
+      <p class="text-[10px] text-gray-500 mt-1">Dica: Use **negrito**, # titulo, > citação.</p>
+    </div>
+
+  </div>
+
+  <div class="mt-8 flex gap-4">
+    <button type="submit" class="flex-1 bg-green-600 text-white font-bold py-3 border-2 border-black hover:bg-green-500 active:bg-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-y-1">
+      {isEdit ? 'SALVAR ALTERAÇÕES' : 'PUBLICAR REVIEW'}
+    </button>
+    
+    {isEdit && (
+      <button type="button" id="delete-btn" class="px-6 bg-red-600 text-white font-bold border-2 border-black hover:bg-red-500 active:bg-black transition-colors">
+        DELETAR
+      </button>
+    )}
+  </div>
+</form>
+
+<script define:vars={{ isEdit, reviewId: initialData.id, API_URL: import.meta.env.PUBLIC_API_URL }}>
+  const form = document.getElementById('review-form');
+  const deleteBtn = document.getElementById('delete-btn');
+
+  // Lógica de Salvar (Create ou Update)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const token = document.getElementById('admin-token').value;
+    
+    if (!token) return alert('PRECISA DO TOKEN DE ADMIN!');
+
+    // Transforma o FormData em JSON
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData);
+    
+    // Tratamento de tipos especiais
+    payload.rating = parseInt(payload.rating);
+    payload.published = true;
+
+    try {
+      const url = isEdit ? `${API_URL}/reviews/${reviewId}` : `${API_URL}/reviews/`;
+      const method = isEdit ? 'PATCH' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': token // O Cabeçalho de Segurança
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert('SUCESSO! Redirecionando...');
+        window.location.href = isEdit ? `/review/${reviewId}` : '/';
+      } else {
+        const err = await res.json();
+        alert(`ERRO: ${err.detail}`);
+      }
+    } catch (error) {
+      alert('Erro de conexão com o servidor.');
+    }
+  });
+
+  // Lógica de Deletar
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', async () => {
+      const token = document.getElementById('admin-token').value;
+      if (!token) return alert('PRECISA DO TOKEN PARA DELETAR!');
+      
+      if(!confirm('TEM CERTEZA? ISSO É PERMANENTE.')) return;
+
+      try {
+        const res = await fetch(`${API_URL}/reviews/${reviewId}`, {
+          method: 'DELETE',
+          headers: { 'X-Admin-Token': token }
+        });
+
+        if (res.ok) {
+          alert('Review deletada.');
+          window.location.href = '/';
+        } else {
+          alert('Erro ao deletar.');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    });
+  }
+</script>

@@ -1,0 +1,37 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import AdminForm from '../../../components/AdminForm.astro';
+import type { Review } from '../../../types';
+
+// 1. OBRIGATÓRIO: Gerar páginas de edição para cada review existente
+export async function getStaticPaths() {
+  const API_URL = import.meta.env.PUBLIC_API_URL;
+  try {
+    const res = await fetch(`${API_URL}/reviews/`);
+    const reviews: Review[] = await res.json();
+    
+    return reviews.map((review) => ({
+      params: { id: review.id.toString() },
+      props: { review } // Já passamos os dados para preencher o formulário
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+// 2. Recebe os dados
+const { review } = Astro.props;
+---
+
+<Layout title={`Editando: ${review.title}`}>
+  <main class="min-h-screen p-8 bg-stone-200">
+    <div class="mb-4 flex justify-between items-center max-w-4xl mx-auto">
+      <a href={`/review/${review.id}`} class="font-mono text-sm underline hover:text-blue-600">
+        &lt; Cancelar e Voltar
+      </a>
+      <span class="font-mono text-xs bg-yellow-200 px-2 border border-black">MODO ADMIN</span>
+    </div>
+
+    <AdminForm isEdit={true} initialData={review} />
+  </main>
+</Layout>
