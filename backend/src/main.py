@@ -53,10 +53,8 @@ app.add_middleware(
     CORSMiddleware,
     # Lista de origens permitidas (quem pode chamar a API)
     allow_origins=[
-    "http://localhost:4321",
-    "http://[2804:14d:5888:2e5a::1000]",
-    "http://[2804:14d:5888:2e5a::1000]:80"
-    "https://letracaixad.otavi.online",
+        "http://localhost:4321",
+        "https://letracaixad.otavi.online",
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Permite GET, POST, DELETE, PATCH, OPTIONS

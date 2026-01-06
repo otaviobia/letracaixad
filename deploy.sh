@@ -1,18 +1,18 @@
 #!/bin/bash
-
 echo "=========================================="
-echo "🔄  ATUALIZANDO O BLOG..."
+echo "🔄  ATUALIZANDO O BLOG (SEM CACHE)..."
 echo "=========================================="
 
-# 1. Reconstrói APENAS o container 'web' (Frontend)
-# O backend e o banco de dados continuam rodando sem interrupção.
-docker compose up -d --build web
+# 1. Força a reconstrução do zero (sem aproveitar cache antigo)
+# Isso obriga o Astro a bater na API e pegar os posts novos.
+docker compose build --no-cache web
 
-# 2. Limpeza de casa (Opcional, mas recomendado)
-# Remove a imagem antiga que ficou sobrando para liberar espaço em disco.
-# O '-f' força a limpeza sem pedir confirmação.
+# 2. Sobe o novo container
+docker compose up -d web
+
+# 3. Limpeza
 docker image prune -f
 
 echo "=========================================="
-echo "✅  SUCESSO! O site foi atualizado."
+echo "✅  SUCESSO! Site atualizado com dados frescos."
 echo "=========================================="

@@ -4,33 +4,26 @@ import { type Review, RatingEnum } from '../../types';
 import { marked } from 'marked';
 import '../../styles/global.css';
 
-export async function getStaticPaths() {
-  const API_URL = import.meta.env.PUBLIC_API_URL;
-  
-  try {
-  const response = await fetch(`${API_URL}/reviews/`);
-  const reviews: Review[] = await response.json();
-
-  return reviews.map((review) => ({
-    params: { id: review.id.toString() },
-    props: { review },
-  }));
-  } catch (error) {
-  console.error("Erro ao gerar paths:", error);
-  return [];
-  }
-}
 
 interface Props {
   review: Review;
 }
-const { review } = Astro.props;
+
+const { id } = Astro.params;
+
+const response = await fetch(`${import.meta.env.PUBLIC_API_URL}/reviews/${id}`);
+
+if (!response.ok) {
+    return Astro.redirect('/404');
+}
+
+const review = await response.json();
 
 const contentHtml = marked.parse(review.review_markdown || "Sem conteúdo...");
 
 const date = new Date(review.created_at).toLocaleDateString('pt-BR', {
   day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-});
+}`);
 
 const getRatingColor = (rating: number) => {
   switch (rating) {
@@ -103,7 +96,7 @@ const ratingColor = getRatingColor(review.rating);
             />
 
             <img 
-                src="/src/assets/live_reaction.png" 
+                src="/live_reaction.png" 
                 class="absolute inset-0 w-full h-full object-fill z-10 pointer-events-none" 
                 alt="Live Reaction Overlay" 
             />

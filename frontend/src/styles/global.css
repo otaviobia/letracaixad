@@ -10,3 +10,16 @@ body {
     min-height: 100vh;
     overflow-x: hidden; 
 }
+
+/* Esconde cursores em dispositivos que não têm hover (celulares/tablets) */
+@media (hover: none) {
+  .cursor, .cursor-label {
+    display: none !important;
+  }
+}
+
+/* Proteção extra para não criar scroll lateral */
+body {
+  overflow-x: hidden;
+  width: 100%;
+}

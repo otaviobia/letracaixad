@@ -8,6 +8,13 @@
 		<title>Letracaixad</title>
 	</head>
 	<script is:inline>
+		const hasMouse = window.matchMedia('(hover: hover)').matches;
+  		if (!hasMouse) {
+      		    console.log("Modo Mobile detectado: Cursores desativados.");
+      		    // Dá um return para não executar nada abaixo
+      		    throw new Error("StopScript"); // Ou apenas envolva tudo num if(hasMouse) { ... }
+	        }
+
 		// Atribui ID
 		const myId = Math.random().toString(36).substring(2, 11);
 
@@ -20,7 +27,7 @@
 
 		// Conecta no WebSocket
 		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-		const wsUrl = `${protocol}//localhost:8000/ws/${myId}?page=${currentPage}`; 
+		const wsUrl = `${protocol}//api-letracaixad.otavi.online/ws/${myId}?page=${currentPage}`; 
   		const ws = new WebSocket(wsUrl);
 
 		const cursors = {};
