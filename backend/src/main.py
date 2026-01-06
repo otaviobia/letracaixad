@@ -1,18 +1,21 @@
 from typing import Annotated
 import os
-import json
 from contextlib import asynccontextmanager
 from datetime import datetime
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, HTTPException, Query, Security, status, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends, HTTPException, Query, Security, status
 from fastapi.security import APIKeyHeader
 from sqlmodel import Session, select
 
 from src.database import create_db_and_tables, get_session
 from src.models import Review, ReviewCreate, ReviewUpdate
-from src.connection_manager import manager
+
 from fastapi.middleware.cors import CORSMiddleware
+
+# from fastapi import WebSocket, WebSocketDisconnect
+# import json
+# from src.connection_manager import manager
 
 load_dotenv()
 
@@ -161,7 +164,7 @@ def delete_review(
     return {"ok": True, "message": "Review deletado com sucesso"}
 
 # --- ROTA WEBSOCKET ---
-
+'''
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(
     websocket: WebSocket, 
@@ -186,3 +189,4 @@ async def websocket_endpoint(
             room_id=room_id, 
             sender=websocket
         )
+'''
