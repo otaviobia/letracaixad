@@ -6,8 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/database.db:/app/database.db
-      - ./backend/.env:/app/.env
+      - ./backend/data:/app/data
     networks:
       - blog-network
 
@@ -18,6 +17,9 @@ services:
         PUBLIC_API_URL: ${PUBLIC_API_URL}
     container_name: blog-frontend
     restart: always
+    environment:
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - INTERNAL_API_URL=http://api:8000
     depends_on:
       - api
     networks:
@@ -27,7 +29,7 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: blog-tunnel
     restart: always
-    command: tunnel run
+    command: tunnel run --protocol http2
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN}
     networks:
