@@ -1,5 +1,4 @@
-@import "tailwindcss";
-@import "dither-plugin";
+@import "tailwindcss/preflight";
 
 body {
     background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2)), url("/src/assets/outer-wilds-4k.png");
