@@ -5,6 +5,8 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    environment:
+      - ADMIN_SECRET=${ADMIN_SECRET}
     volumes:
       - ./backend/data:/app/data
     networks:
