@@ -7,6 +7,7 @@ services:
       - "8000:8000"
     environment:
       - ADMIN_SECRET=${ADMIN_SECRET}
+      - TZ=America/Sao_Paulo
     volumes:
       - ./backend/data:/app/data
     networks:
@@ -22,6 +23,7 @@ services:
     environment:
       - PUBLIC_API_URL=${PUBLIC_API_URL}
       - INTERNAL_API_URL=http://api:8000
+      - TZ=America/Sao_Paulo
     depends_on:
       - api
     networks:

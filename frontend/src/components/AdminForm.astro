@@ -37,24 +37,24 @@ const data = {
 ---
 
 <form id="review-form" class="font-mono max-w-4xl mx-auto p-6 border-2 border-black bg-gray-100 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-  
+
   <h2 class="text-2xl font-black mb-6 uppercase border-b-2 border-black pb-2">
     {isEdit ? `EDITANDO: ${data.title}` : 'NOVA ENTRADA NO BANCO DE DADOS'}
   </h2>
 
   <div class="mb-8 bg-red-100 p-4 border-2 border-red-500 border-dashed">
     <label class="block font-bold text-red-700 text-xs mb-1">🔑 ADMIN SECRET</label>
-    <input 
-      type="password" 
-      id="admin-token" 
-      class="w-full bg-white border-2 border-red-500 p-2 text-sm" 
+    <input
+      type="password"
+      id="admin-token"
+      class="w-full bg-white border-2 border-red-500 p-2 text-sm"
       placeholder="Cole sua senha mestra aqui..."
       required
     />
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    
+
     <div class="col-span-2">
       <label class="block font-bold text-xs mb-1">TÍTULO DA OBRA</label>
       <input type="text" name="title" value={data.title} required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none transition-colors" />
@@ -93,12 +93,7 @@ const data = {
 
     <div>
         <label class="block font-bold text-xs mb-1">QUANDO ASSISTIU? (DATA)</label>
-        <input 
-            type="datetime-local" 
-            name="created_at" 
-            value={data.created_at} 
-            class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none cursor-pointer" 
-        />
+        <input type="datetime-local" name="created_at" value={data.created_at} class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none cursor-pointer"/>
     </div>
 
     <div>
@@ -123,7 +118,7 @@ const data = {
     <button type="submit" class="flex-1 bg-green-600 text-white font-bold py-3 border-2 border-black hover:bg-green-500 active:bg-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-y-1">
       {isEdit ? 'SALVAR ALTERAÇÕES' : 'PUBLICAR REVIEW'}
     </button>
-    
+
     {isEdit && (
       <button type="button" id="delete-btn" class="px-6 bg-red-600 text-white font-bold border-2 border-black hover:bg-red-500 active:bg-black transition-colors">
         DELETAR
@@ -140,19 +135,19 @@ const data = {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const token = document.getElementById('admin-token').value;
-    
+
     if (!token) return alert('PRECISA DO TOKEN DE ADMIN!');
 
     // Transforma o FormData em JSON
     const formData = new FormData(form);
     const payload = Object.fromEntries(formData);
-    
+
     // Tratamento de tipos especiais
     payload.rating = parseInt(payload.rating);
     payload.published = true;
 
     if (payload.created_at) {
-      payload.created_at = new Date(payload.created_at).toISOString();
+      payload.created_at = payload.created_at + ":00";
     }
 
     try {
@@ -185,7 +180,7 @@ const data = {
     deleteBtn.addEventListener('click', async () => {
       const token = document.getElementById('admin-token').value;
       if (!token) return alert('PRECISA DO TOKEN PARA DELETAR!');
-      
+
       if(!confirm('TEM CERTEZA? ISSO É PERMANENTE.')) return;
 
       try {

@@ -23,7 +23,7 @@ const review = await response.json();
 const contentHtml = marked.parse(review.review_markdown || "Sem conteúdo...");
 
 const date = new Date(review.created_at).toLocaleDateString('pt-BR', {
-  day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo'
 });
 
 const getRatingColor = (rating: number) => {
@@ -43,13 +43,13 @@ export const prerender = false;
 
 <Layout>
   <main class="max-w-4xl mx-auto p-4 font-mono">
-  
+
   <a href="/" class="inline-block mb-3 px-4 py-1 bg-[#67a7ac] border-t-2 border-l-2 border-b-2 border-r-2 border-[#306f74] hover:bg-[#306f74]/80 hover:text-white transition-colors">
   &lt; VOLTAR PARA A LISTA
   </a>
 
   <article class="bg-white">
-  
+
   <header class="border-b-2 border-black p-6 bg-gray-100">
   <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
     <div>
@@ -73,7 +73,7 @@ export const prerender = false;
     <span>> ID: {review.id}</span>
     <span>> DATA: {date}</span>
     {review.time_spent && <span>> TEMPO: {review.time_spent}</span>}
-    
+
     {review.external_link && (
     <a href={review.external_link} target="_blank" class="text-blue-600 hover:underline hover:bg-blue-100">
     > LINK EXTERNO
@@ -83,24 +83,24 @@ export const prerender = false;
   </header>
 
   <div class="w-full h-64 md:h-96 overflow-hidden border-b-2 border-black relative group">
-    <img 
-    src={review.cover_image_url} 
+    <img
+    src={review.cover_image_url}
     class="w-full h-full object-cover object-center grayscale-20 group-hover:grayscale-0 transition-all duration-500"
     />
 
     {review.reaction_gif_url && (
     <div class="absolute bottom-4 right-4 w-36 md:w-56 aspect-4/3 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] z-20">
       <div class="relative w-full h-full bg-black">
-      <img 
-        src={review.reaction_gif_url} 
-        class="absolute inset-0 w-full h-full object-cover pt-6" 
+      <img
+        src={review.reaction_gif_url}
+        class="absolute inset-0 w-full h-full object-cover pt-6"
         alt="Reaction GIF"
       />
 
-      <img 
-        src="/live_reaction.png" 
-        class="absolute inset-0 w-full h-full object-fill z-10 pointer-events-none" 
-        alt="Live Reaction Overlay" 
+      <img
+        src="/live_reaction.png"
+        class="absolute inset-0 w-full h-full object-fill z-10 pointer-events-none"
+        alt="Live Reaction Overlay"
       />
       </div>
     </div>
