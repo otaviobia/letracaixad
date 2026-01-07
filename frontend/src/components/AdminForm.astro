@@ -37,31 +37,31 @@ const data = {
 ---
 
 <form id="review-form" class="font-mono max-w-4xl mx-auto p-6 border-2 border-black bg-gray-100 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-
-  <h2 class="text-2xl font-black mb-6 uppercase border-b-2 border-black pb-2">
-    {isEdit ? `EDITANDO: ${data.title}` : 'NOVA ENTRADA NO BANCO DE DADOS'}
+  
+  <h2 class="text-xl md:text-2xl font-black mb-6 uppercase border-b-2 border-black pb-2">
+    {isEdit ? `EDITANDO: ${data.title}` : 'NOVA ANÁLISE'}
   </h2>
 
   <div class="mb-8 bg-red-100 p-4 border-2 border-red-500 border-dashed">
     <label class="block font-bold text-red-700 text-xs mb-1">🔑 ADMIN SECRET</label>
-    <input
-      type="password"
-      id="admin-token"
-      class="w-full bg-white border-2 border-red-500 p-2 text-sm"
-      placeholder="Cole sua senha mestra aqui..."
+    <input 
+      type="password" 
+      id="admin-token" 
+      class="w-full bg-white border-2 border-red-500 p-2 text-sm outline-none" 
+      placeholder="Senha mestra..."
       required
     />
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-    <div class="col-span-2">
+    
+    <div class="col-span-1 md:col-span-2">
       <label class="block font-bold text-xs mb-1">TÍTULO DA OBRA</label>
       <input type="text" name="title" value={data.title} required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none transition-colors" />
     </div>
 
     <div>
-      <label class="block font-bold text-xs mb-1">TIPO (filme, jogo, etc)</label>
+      <label class="block font-bold text-xs mb-1">TIPO (filme, jogo...)</label>
       <input type="text" name="content_type" value={data.content_type} required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
     </div>
 
@@ -87,40 +87,41 @@ const data = {
     </div>
 
     <div>
-      <label class="block font-bold text-xs mb-1">TEMPO GASTO (Ex: 2h 30m)</label>
+      <label class="block font-bold text-xs mb-1">TEMPO GASTO</label>
       <input type="text" name="time_spent" value={data.time_spent} class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
     </div>
 
     <div>
-        <label class="block font-bold text-xs mb-1">QUANDO ASSISTIU? (DATA)</label>
-        <input type="datetime-local" name="created_at" value={data.created_at} class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none cursor-pointer"/>
+        <label class="block font-bold text-xs mb-1">QUANDO</label>
+        <input type="datetime-local" name="created_at" value={data.created_at} class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none cursor-pointer" 
+        />
     </div>
 
-    <div>
-      <label class="block font-bold text-xs mb-1">LINK EXTERNO (Onde ver?)</label>
+    <div class="col-span-1 md:col-span-2">
+      <label class="block font-bold text-xs mb-1">LINK EXTERNO</label>
       <input type="url" name="external_link" value={data.external_link} class="w-full border-2 border-black p-2 text-xs focus:bg-yellow-50 outline-none" />
     </div>
 
-    <div>
+    <div class="col-span-1 md:col-span-2">
       <label class="block font-bold text-xs mb-1">TAGS (Separadas por vírgula)</label>
       <input type="text" name="tags_list" value={data.tags_list} placeholder="terror, a24, indie" required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
     </div>
 
-    <div class="col-span-2">
-      <label class="block font-bold text-xs mb-1">REVIEW (MARKDOWN SUPORTADO)</label>
+    <div class="col-span-1 md:col-span-2">
+      <label class="block font-bold text-xs mb-1">REVIEW (MARKDOWN)</label>
       <textarea name="review_markdown" rows="12" class="w-full border-2 border-black p-4 font-mono text-sm leading-relaxed focus:bg-yellow-50 outline-none" required>{data.review_markdown}</textarea>
       <p class="text-[10px] text-gray-500 mt-1">Dica: Use **negrito**, # titulo, > citação.</p>
     </div>
 
   </div>
 
-  <div class="mt-8 flex gap-4">
+  <div class="mt-8 flex gap-4 flex-col md:flex-row">
     <button type="submit" class="flex-1 bg-green-600 text-white font-bold py-3 border-2 border-black hover:bg-green-500 active:bg-black transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-y-1">
       {isEdit ? 'SALVAR ALTERAÇÕES' : 'PUBLICAR REVIEW'}
     </button>
-
+    
     {isEdit && (
-      <button type="button" id="delete-btn" class="px-6 bg-red-600 text-white font-bold border-2 border-black hover:bg-red-500 active:bg-black transition-colors">
+      <button type="button" id="delete-btn" class="px-6 bg-red-600 text-white font-bold border-2 border-black hover:bg-red-500 active:bg-black transition-colors py-3 md:py-0">
         DELETAR
       </button>
     )}
@@ -131,23 +132,20 @@ const data = {
   const form = document.getElementById('review-form');
   const deleteBtn = document.getElementById('delete-btn');
 
-  // Lógica de Salvar (Create ou Update)
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const token = document.getElementById('admin-token').value;
-
+    
     if (!token) return alert('PRECISA DO TOKEN DE ADMIN!');
 
-    // Transforma o FormData em JSON
     const formData = new FormData(form);
     const payload = Object.fromEntries(formData);
-
-    // Tratamento de tipos especiais
+    
     payload.rating = parseInt(payload.rating);
     payload.published = true;
 
     if (payload.created_at) {
-      payload.created_at = payload.created_at + ":00";
+       payload.created_at = payload.created_at + ":00";
     }
 
     try {
@@ -158,7 +156,7 @@ const data = {
         method: method,
         headers: {
           'Content-Type': 'application/json',
-          'X-Admin-Token': token // O Cabeçalho de Segurança
+          'X-Admin-Token': token
         },
         body: JSON.stringify(payload)
       });
@@ -175,12 +173,11 @@ const data = {
     }
   });
 
-  // Lógica de Deletar
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
       const token = document.getElementById('admin-token').value;
       if (!token) return alert('PRECISA DO TOKEN PARA DELETAR!');
-
+      
       if(!confirm('TEM CERTEZA? ISSO É PERMANENTE.')) return;
 
       try {
