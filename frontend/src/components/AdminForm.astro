@@ -9,6 +9,18 @@ interface Props {
 
 const { initialData = {}, isEdit = false } = Astro.props;
 
+const formatDateForInput = (dateString: string | null) => {
+  if (!dateString) {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  }
+  const date = new Date(dateString);
+  const offset = date.getTimezoneOffset() * 60000;
+  const localISOTime = (new Date(date.getTime() - offset)).toISOString().slice(0, 16);
+  return localISOTime;
+};
+
 const data = {
   title: initialData.title || '',
   content_type: initialData.content_type || 'filme',
@@ -19,7 +31,8 @@ const data = {
   tags_list: initialData.tags_list || '',
   external_link: initialData.external_link || '',
   time_spent: initialData.time_spent || '',
-  published: initialData.published ?? true,
+  created_at: formatDateForInput(initialData.created_at),
+  published: initialData.published ?? true
 };
 ---
 
@@ -79,11 +92,21 @@ const data = {
     </div>
 
     <div>
+        <label class="block font-bold text-xs mb-1">QUANDO ASSISTIU? (DATA)</label>
+        <input 
+            type="datetime-local" 
+            name="created_at" 
+            value={data.created_at} 
+            class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none cursor-pointer" 
+        />
+    </div>
+
+    <div>
       <label class="block font-bold text-xs mb-1">LINK EXTERNO (Onde ver?)</label>
       <input type="url" name="external_link" value={data.external_link} class="w-full border-2 border-black p-2 text-xs focus:bg-yellow-50 outline-none" />
     </div>
 
-    <div class="col-span-2">
+    <div>
       <label class="block font-bold text-xs mb-1">TAGS (Separadas por vírgula)</label>
       <input type="text" name="tags_list" value={data.tags_list} placeholder="terror, a24, indie" required class="w-full border-2 border-black p-2 focus:bg-yellow-50 outline-none" />
     </div>
@@ -127,6 +150,10 @@ const data = {
     // Tratamento de tipos especiais
     payload.rating = parseInt(payload.rating);
     payload.published = true;
+
+    if (payload.created_at) {
+      payload.created_at = new Date(payload.created_at).toISOString();
+    }
 
     try {
       const url = isEdit ? `${API_URL}/reviews/${reviewId}` : `${API_URL}/reviews/`;

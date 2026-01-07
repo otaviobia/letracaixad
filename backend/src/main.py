@@ -113,6 +113,9 @@ def create_review(
     _is_admin: AdminDep 
 ):
     """Cria um novo review."""
+    review_data = review.model_dump()
+    if review_data.get("created_at") is None:
+        del review_data["created_at"]
     db_review = Review.model_validate(review)
     session.add(db_review)
     session.commit()

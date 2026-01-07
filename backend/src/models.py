@@ -12,16 +12,11 @@ class RatingEnum(IntEnum):
 class ReviewBase(SQLModel):
     title: str = Field(index=True)
     content_type: str = Field(index=True) # filme, série, jogo, livro, etc
-    
     cover_image_url: str 
     reaction_gif_url: str | None = None
-    
     review_markdown: str
-    
     rating: RatingEnum = Field(index=True)
-    
     tags_list: str # string separada com vírgula "terror, sci-fi"
-    
     external_link: str | None = None
     time_spent: str | None = None
     published: bool = True
@@ -32,7 +27,7 @@ class Review(ReviewBase, table=True):
     updated_at: datetime | None = Field(default_factory=datetime.now)
 
 class ReviewCreate(ReviewBase):
-    pass
+    created_at: datetime | None = None
 
 class ReviewUpdate(SQLModel):
     title: str | None = None
@@ -44,4 +39,5 @@ class ReviewUpdate(SQLModel):
     tags_list: str | None = None
     external_link: str | None = None
     time_spent: str | None = None
+    created_at: datetime | None = None
     published: bool | None = None
