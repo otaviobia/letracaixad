@@ -1,7 +1,6 @@
-<div style="text-align: center;">
-<img src="frontend/public/favicon.ico"/>
-
-# Letracaixad
+<div align="center">
+  <img src="frontend/public/favicon.ico" alt="logo" height="100" />
+  <h1>Letracaixad</h1>
 </div>
 
 Um blog pessoal de avaliações de filmes/séries/jogos que brinca com o nome da rede social *Letterboxd*. Acessável em https://letracaixad.otavi.online/.
