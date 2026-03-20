@@ -1,0 +1,22 @@
+name: Production Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    if: github.event_name == 'push'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose -f docker-compose.yaml up -d --build
+
+      - name: Clean up old images
+        run: docker image prune -f/
