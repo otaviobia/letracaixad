@@ -21,6 +21,9 @@ jobs:
           # Para não apagar a base de dados do meu servidor
           clean: false
 
+      - name: Copy environment files
+        run: cp /home/otavio/letracaixad/.env .env
+
       - name: Deploy with Docker Compose
         run: |
           docker compose -f docker-compose.yaml up -d --build
