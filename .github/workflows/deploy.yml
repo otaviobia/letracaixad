@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          # Para não apagar a base de dados do meu servidor
+          clean: false
 
       - name: Deploy with Docker Compose
         run: |
