@@ -9,7 +9,7 @@ services:
       - ADMIN_SECRET=${ADMIN_SECRET}
       - TZ=America/Sao_Paulo
     volumes:
-      - ./backend/data:/app/data
+      - /home/otavio/letracaixad_prod/database.db:/app/data/database.db
     networks:
       - blog-network
       - cloudflare_net
