@@ -9,7 +9,7 @@ from fastapi.security import APIKeyHeader
 from sqlmodel import Session, select
 
 from src.database import create_db_and_tables, get_session
-from src.models import Review, ReviewCreate, ReviewUpdate
+from src.models import Review, ReviewCreate, ReviewUpdate, RatingEnum
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -79,7 +79,7 @@ def read_reviews(
     offset: int = 0,
     limit: int = Query(default=20, le=100),
     content_type: str | None = None,
-    rating: int | None = None
+    rating: RatingEnum | None = None
 ):
     """
     Lista reviews com paginação e filtros opcionais.
@@ -89,7 +89,7 @@ def read_reviews(
     
     if content_type:
         query = query.where(Review.content_type == content_type)
-    if rating:
+    if rating is not None:
         query = query.where(Review.rating == rating)
         
     query = query.order_by(Review.created_at.desc()).offset(offset).limit(limit)

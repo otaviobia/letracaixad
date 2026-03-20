@@ -12,6 +12,7 @@ services:
       - ./backend/data:/app/data
     networks:
       - blog-network
+      - cloudflare_net
 
   web:
     build:
@@ -28,17 +29,9 @@ services:
       - api
     networks:
       - blog-network
-
-  tunnel:
-    image: cloudflare/cloudflared:latest
-    container_name: blog-tunnel
-    restart: always
-    command: tunnel run --protocol http2
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TOKEN}
-    networks:
-      - blog-network
+      - cloudflare_net
 
 networks:
+  cloudflare_net:
+    external: true
   blog-network:
-    driver: bridge

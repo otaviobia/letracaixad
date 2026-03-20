@@ -1,4 +1,6 @@
+# Usa a imagem do Node 20
 FROM node:20-alpine
+
 WORKDIR /app
 
 # Instala dependências
@@ -18,6 +20,5 @@ EXPOSE 80
 
 # Roda o comando de build (Gera a pasta dist)
 RUN npm run build
-
 
 CMD ["node", "./dist/server/entry.mjs"]

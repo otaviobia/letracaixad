@@ -1,12 +1,12 @@
-# backend/Dockerfile
+# Usa a imagem do Python
 FROM python:3.12-slim-bookworm
 
-# Instala o gerenciador de pacotes 'uv' (muito mais rápido que o pip)
+# Instala o gerenciador de pacotes 'uv'
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 WORKDIR /app
 
-# Copia os arquivos de dependência primeiro (para cachear o docker build)
+# Copia os arquivos de dependência
 COPY pyproject.toml uv.lock ./
 
 # Instala as dependências do sistema e do projeto
@@ -15,8 +15,7 @@ RUN uv sync --frozen --no-install-project
 # Copia o resto do código
 COPY . .
 
-# Garante que o banco de dados tenha permissão de escrita
-# (O SQLite precisa poder criar arquivos de journal na pasta)
+# Garante que o SQLite tenha permissão de escrita
 RUN chmod -R 777 /app
 
 # Comando para rodar a API
